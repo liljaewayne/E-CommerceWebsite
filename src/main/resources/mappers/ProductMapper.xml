@@ -180,7 +180,7 @@
     <select id="selectList" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
-        from mmall_product
+        from commerce_product
         ORDER BY id asc
     </select>
 
@@ -188,7 +188,7 @@
     <select id="selectByNameAndProductId" resultMap="BaseResultMap" parameterType="map">
         SELECT
         <include refid="Base_Column_List"/>
-        from mmall_product
+        from commerce_product
         <where>
             <if test="productName != null">
                 and name like #{productName}
@@ -202,7 +202,7 @@
     <select id="selectByNameAndCategoryIds" resultMap="BaseResultMap" parameterType="map">
         SELECT
         <include refid="Base_Column_List"></include>
-        from mmall_product
+        from commerce_product
         where status = 1
         <if test="productName != null">
             and name like #{productName}

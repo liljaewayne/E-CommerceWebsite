@@ -178,13 +178,13 @@
   </update>
     
     <delete id="deleteByShippingIdUserId" parameterType="map">
-        DELETE  FROM  mmall_shipping
+        DELETE  FROM  commerce_shipping
         where id = #{shippingId}
         and user_id = #{userId}
     </delete>
 
-    <update id="updateByShipping" parameterType="com.mmall.pojo.Shipping">
-        update mmall_shipping
+    <update id="updateByShipping" parameterType="com.commerce.pojo.Shipping">
+        update commerce_shipping
         set
         receiver_name = #{receiverName,jdbcType=VARCHAR},
         receiver_phone = #{receiverPhone,jdbcType=VARCHAR},
@@ -204,7 +204,7 @@
     <select id="selectByShippingIdUserId" resultMap="BaseResultMap" parameterType="map">
         SELECT
         <include refid="Base_Column_List"/>
-        from mmall_shipping
+        from commerce_shipping
         where id = #{shippingId}
         and user_id = #{userId}
     </select>
@@ -213,7 +213,7 @@
     <select id="selectByUserId" resultMap="BaseResultMap" parameterType="map">
         SELECT
         <include refid="Base_Column_List"/>
-        from mmall_shipping
+        from commerce_shipping
         where user_id = #{userId}
     </select>
 </mapper>
