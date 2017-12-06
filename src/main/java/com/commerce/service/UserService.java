@@ -1,12 +1,8 @@
 package com.commerce.service;
 
-
 import com.commerce.common.ServerResponse;
 import com.commerce.pojo.User;
 
-/**
- * Created by geely
- */
 public interface UserService {
 
     ServerResponse<User> login(String username, String password);
