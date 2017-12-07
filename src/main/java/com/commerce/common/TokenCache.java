@@ -14,7 +14,7 @@ public class TokenCache {
 
     public static final String TOKEN_PREFIX = "token_";
 
-    //LRU算法
+    // LRU算法
     private static LoadingCache<String, String> localCache = CacheBuilder
             .newBuilder()
             .initialCapacity(1000)
