@@ -4,9 +4,7 @@ import com.google.common.collect.Sets;
 
 import java.util.Set;
 
-/**
- * Created by geely
- */
+
 public class Const {
 
     public static final String CURRENT_USER = "currentUser";
@@ -82,7 +80,7 @@ public class Const {
                     return orderStatusEnum;
                 }
             }
-            throw new RuntimeException("么有找到对应的枚举");
+            throw new RuntimeException("没有找到对应的枚举");
         }
     }
 
@@ -141,7 +139,7 @@ public class Const {
                     return paymentTypeEnum;
                 }
             }
-            throw new RuntimeException("么有找到对应的枚举");
+            throw new RuntimeException("没有找到对应的枚举");
         }
 
     }

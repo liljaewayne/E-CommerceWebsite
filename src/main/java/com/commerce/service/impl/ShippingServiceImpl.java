@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by geely
- */
+
 @Service("shippingService")
 public class ShippingServiceImpl implements ShippingService {
 

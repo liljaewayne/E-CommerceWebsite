@@ -12,9 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-/**
- * Created by geely
- */
+
 @Service("fileService")
 public class FileServiceImpl implements FileService {
 
