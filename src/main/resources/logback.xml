@@ -11,9 +11,9 @@
     </appender>
 
     <appender name="commerce" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>D:/workspace/E-CommerceWebSite/logs/E-CommerceWebSite.log</File>
+        <File>D:/workspaces/E-CommerceWebSite/logs/E-CommerceWebSite.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>D:/workspace/E-CommerceWebSite/logs/E-CommerceWebSite.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <fileNamePattern>D:/workspaces/E-CommerceWebSite/logs/E-CommerceWebSite.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
             <append>true</append>
             <maxHistory>10</maxHistory>
         </rollingPolicy>
@@ -23,9 +23,9 @@
     </appender>
 
     <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>D:/workspace/E-CommerceWebSite/logs/error.log</File>
+        <File>D:/workspaces/E-CommerceWebSite/logs/error.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>D:/workspace/E-CommerceWebSite/logs/error.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <fileNamePattern>D:/workspaces/E-CommerceWebSite/logs/error.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
             <append>true</append>
             <maxHistory>10</maxHistory>
         </rollingPolicy>
