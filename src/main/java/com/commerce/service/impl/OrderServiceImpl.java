@@ -346,6 +346,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
+    // 请求生成支付二维码
     public ServerResponse pay(Long orderNo, Integer userId, String path) {
         Map<String, String> resultMap = Maps.newHashMap();
         Order order = orderMapper.selectByUserIdAndOrderNo(userId, orderNo);
@@ -361,7 +362,7 @@ public class OrderServiceImpl implements OrderService {
 
 
         // (必填) 订单标题，粗略描述用户的支付目的。如“xxx品牌xxx门店当面付扫码消费”
-        String subject = new StringBuilder().append("happymmall扫码支付,订单号:").append(outTradeNo).toString();
+        String subject = new StringBuilder().append("扫码支付,订单号:").append(outTradeNo).toString();
 
 
         // (必填) 订单总金额，单位为元，不能超过1亿元
@@ -413,10 +414,10 @@ public class OrderServiceImpl implements OrderService {
                 .setUndiscountableAmount(undiscountableAmount).setSellerId(sellerId).setBody(body)
                 .setOperatorId(operatorId).setStoreId(storeId).setExtendParams(extendParams)
                 .setTimeoutExpress(timeoutExpress)
-                .setNotifyUrl(PropertiesUtil.getProperty("alipay.callback.url"))//支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置
+                .setNotifyUrl(PropertiesUtil.getProperty("alipay.callback.url"))// 支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置
                 .setGoodsDetailList(goodsDetailList);
 
-
+        
         AlipayF2FPrecreateResult result = tradeService.tradePrecreate(builder);
         switch (result.getTradeStatus()) {
             case SUCCESS:
@@ -432,11 +433,13 @@ public class OrderServiceImpl implements OrderService {
                 }
 
                 // 需要修改为运行机器上的路径
-                //细节细节细节
                 String qrPath = String.format(path + "/qr-%s.png", response.getOutTradeNo());
                 String qrFileName = String.format("qr-%s.png", response.getOutTradeNo());
+                
+                // 使用zxing将字符串转成二维码图片, 并保存到qrPath路径下
                 ZxingUtils.getQRCodeImge(response.getQrCode(), 256, qrPath);
 
+                // 再将项目路径下的二维码图片向FtpServer传一份拷贝
                 File targetFile = new File(path, qrFileName);
                 try {
                     FTPUtil.uploadFile(Lists.newArrayList(targetFile));
@@ -447,6 +450,7 @@ public class OrderServiceImpl implements OrderService {
                 String qrUrl = PropertiesUtil.getProperty("ftp.server.http.prefix") + targetFile.getName();
                 resultMap.put("qrUrl", qrUrl);
                 return ServerResponse.createBySuccess(resultMap);
+                
             case FAILED:
                 logger.error("支付宝预下单失败!!!");
                 return ServerResponse.createByErrorMessage("支付宝预下单失败!!!");
@@ -475,13 +479,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
+    // 支付宝支付回掉
     public ServerResponse aliCallback(Map<String, String> params) {
         Long orderNo = Long.parseLong(params.get("out_trade_no"));
         String tradeNo = params.get("trade_no");
         String tradeStatus = params.get("trade_status");
         Order order = orderMapper.selectByOrderNo(orderNo);
         if (order == null) {
-            return ServerResponse.createByErrorMessage("非快乐慕商城的订单,回调忽略");
+            return ServerResponse.createByErrorMessage("非商城订单,回调忽略");
         }
         if (order.getStatus() >= Const.OrderStatusEnum.PAID.getCode()) {
             return ServerResponse.createBySuccess("支付宝重复调用");
@@ -511,14 +516,13 @@ public class OrderServiceImpl implements OrderService {
             return ServerResponse.createByErrorMessage("用户没有该订单");
         }
         if (order.getStatus() >= Const.OrderStatusEnum.PAID.getCode()) {
-            return ServerResponse.createBySuccess();
+            return ServerResponse.createBySuccess("支付成功");
         }
         return ServerResponse.createByError();
     }
 
 
-    //backend
-
+    // backend
     public ServerResponse<PageInfo> manageList(int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<Order> orderList = orderMapper.selectAllOrder();
@@ -527,8 +531,7 @@ public class OrderServiceImpl implements OrderService {
         pageResult.setList(orderVoList);
         return ServerResponse.createBySuccess(pageResult);
     }
-
-
+    
     public ServerResponse<OrderVo> manageDetail(Long orderNo) {
         Order order = orderMapper.selectByOrderNo(orderNo);
         if (order != null) {
