@@ -285,8 +285,52 @@
                 </configuration>
             </plugin>
         </plugins>
+        
+        <resources>
+            <!-- 所有环境公共配置文件 -->
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <!-- 指定环境配置文件 -->
+            <resource>
+                <directory>src/main/resources.${deployType}</directory>
+                <excludes>
+                    <exclude>*.jsp</exclude>
+                </excludes>
+            </resource>
+        </resources>
 
     </build>
+
+
+    <!-- 环境隔离 -->
+    <profiles>
+        
+        <profile>
+            <id>dev</id>
+            <!-- 默认选择开发环境 -->
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <deployType>dev</deployType>
+            </properties>
+        </profile>
+        
+        <profile>
+            <id>beta</id>
+            <properties>
+                <deployType>beta</deployType>
+            </properties>
+        </profile>
+        
+        <profile>
+            <id>prod</id>
+            <properties>
+                <deployType>prod</deployType>
+            </properties>
+        </profile>
+    </profiles>
 
 
 </project>
