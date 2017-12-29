@@ -37,8 +37,6 @@ public class UserController {
     public ServerResponse<User> login(String username, String password, HttpSession session, HttpServletResponse httpServletResponse) {
         ServerResponse<User> response = userService.login(username, password);
         if (response.isSuccess()) {
-//            session.setAttribute(Const.CURRENT_USER, response.getData());
-
             
             /*
             登录时, 将生成的JSESSIONID作为key写入redis, 并将名为commerce_login_token(值为JSESSIONID)的cookie写回浏览器
@@ -57,12 +55,11 @@ public class UserController {
     @RequestMapping(value = "logout.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-//        session.removeAttribute(Const.CURRENT_USER);
 
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
         RedisPoolUtil.del(loginToken);
         CookieUtil.delLoginToken(httpServletRequest, httpServletResponse);
-        
+
         return ServerResponse.createBySuccess();
     }
 
@@ -84,7 +81,6 @@ public class UserController {
     @ResponseBody
     public ServerResponse<User> getUserInfo(HttpServletRequest httpServletRequest) {
 
-//        User user = (User) session.getAttribute(Const.CURRENT_USER);
         
         /*
         查询登录信息时, 从浏览器带过来的所有cookie中找到指定为commerce_login_token, 用其值到redis中作为key查找对应用户的序列化数据
@@ -124,8 +120,10 @@ public class UserController {
 
     @RequestMapping(value = "reset_password.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> resetPassword(HttpSession session, String passwordOld, String passwordNew) {
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+    public ServerResponse<String> resetPassword(HttpServletRequest httpServletRequest, String passwordOld, String passwordNew) {
+        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        String userJson = RedisPoolUtil.get(loginToken);
+        User user = JsonUtil.stringToObj(userJson, User.class);
         if (user == null) {
             return ServerResponse.createByErrorMessage("用户未登录");
         }
@@ -135,25 +133,32 @@ public class UserController {
 
     @RequestMapping(value = "update_information.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<User> update_information(HttpSession session, User user) {
-        User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
+    public ServerResponse<User> update_information(HttpServletRequest httpServletRequest, User user) {
+
+        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        String userJson = RedisPoolUtil.get(loginToken);
+        User currentUser = JsonUtil.stringToObj(userJson, User.class);
         if (currentUser == null) {
             return ServerResponse.createByErrorMessage("用户未登录");
         }
+
         user.setId(currentUser.getId());
         user.setUsername(currentUser.getUsername());
         ServerResponse<User> response = userService.updateInformation(user);
+
         if (response.isSuccess()) {
             response.getData().setUsername(currentUser.getUsername());
-            session.setAttribute(Const.CURRENT_USER, response.getData());
+            RedisPoolUtil.setEx(loginToken, JsonUtil.objToString(response.getData()), Const.RedisCacheExTime.REDIS_SESSION_EX_TIME);
         }
         return response;
     }
 
     @RequestMapping(value = "get_information.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<User> get_information(HttpSession session) {
-        User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
+    public ServerResponse<User> get_information(HttpServletRequest httpServletRequest) {
+        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        String userJson = RedisPoolUtil.get(loginToken);
+        User currentUser = JsonUtil.stringToObj(userJson, User.class);
         if (currentUser == null) {
             return ServerResponse.createByErrorCodeMessage(ServerResponse.ResponseCode.NEED_LOGIN.getCode(), "未登录,需要强制登录status=10");
         }
