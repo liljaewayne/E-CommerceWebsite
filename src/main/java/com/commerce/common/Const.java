@@ -13,7 +13,7 @@ public class Const {
     public static final String USERNAME = "username";
 
     public static final String TOKEN_PREFIX = "token_";
-    
+
     public interface ProductListOrderBy {
         Set<String> PRICE_ASC_DESC = Sets.newHashSet("price_desc", "price_asc");
     }
@@ -145,7 +145,7 @@ public class Const {
         }
 
     }
-    
+
     public interface RedisCacheExTime {
         int REDIS_SESSION_EX_TIME = 1_800; // 30分钟
     }

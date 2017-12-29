@@ -74,7 +74,7 @@ public class RedisPool {
         jedis.set("jedisKey", "jedisValue");
 
         System.out.println(jedis.get("jedisKey"));
-        
+
         returnResource(jedis);
 
         pool.destroy();

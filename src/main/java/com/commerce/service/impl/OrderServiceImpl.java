@@ -417,7 +417,7 @@ public class OrderServiceImpl implements OrderService {
                 .setNotifyUrl(PropertiesUtil.getProperty("alipay.callback.url"))// 支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置
                 .setGoodsDetailList(goodsDetailList);
 
-        
+
         AlipayF2FPrecreateResult result = tradeService.tradePrecreate(builder);
         switch (result.getTradeStatus()) {
             case SUCCESS:
@@ -435,7 +435,7 @@ public class OrderServiceImpl implements OrderService {
                 // 需要修改为运行机器上的路径
                 String qrPath = String.format(path + "/qr-%s.png", response.getOutTradeNo());
                 String qrFileName = String.format("qr-%s.png", response.getOutTradeNo());
-                
+
                 // 使用zxing将字符串转成二维码图片, 并保存到qrPath路径下
                 ZxingUtils.getQRCodeImge(response.getQrCode(), 256, qrPath);
 
@@ -450,7 +450,7 @@ public class OrderServiceImpl implements OrderService {
                 String qrUrl = PropertiesUtil.getProperty("ftp.server.http.prefix") + targetFile.getName();
                 resultMap.put("qrUrl", qrUrl);
                 return ServerResponse.createBySuccess(resultMap);
-                
+
             case FAILED:
                 logger.error("支付宝预下单失败!!!");
                 return ServerResponse.createByErrorMessage("支付宝预下单失败!!!");
@@ -531,7 +531,7 @@ public class OrderServiceImpl implements OrderService {
         pageResult.setList(orderVoList);
         return ServerResponse.createBySuccess(pageResult);
     }
-    
+
     public ServerResponse<OrderVo> manageDetail(Long orderNo) {
         Order order = orderMapper.selectByOrderNo(orderNo);
         if (order != null) {

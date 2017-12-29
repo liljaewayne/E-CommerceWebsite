@@ -94,13 +94,13 @@ public class RedisPoolUtil {
 
     // @Test
     public static void main(String[] args) {
-        
+
         set("utilKey", "utilValue");
 
         String value = RedisPoolUtil.get("utilKey");
-        
+
         System.out.println(value);
-        
+
         del("utilKey");
 
     }
