@@ -143,6 +143,10 @@ public class Const {
         }
 
     }
+    
+    public interface RedisCacheExTime {
+        int REDIS_SESSION_EX_TIME = 1_800; // 30分钟
+    }
 
 
 }
