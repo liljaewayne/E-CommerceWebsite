@@ -7,7 +7,7 @@ import com.commerce.service.OrderService;
 import com.commerce.service.UserService;
 import com.commerce.util.CookieUtil;
 import com.commerce.util.JsonUtil;
-import com.commerce.util.RedisPoolUtil;
+import com.commerce.util.RedisSharededPoolUtil;
 import com.commerce.vo.OrderVo;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class OrderManageController {
                                               @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
 
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-        String userJson = RedisPoolUtil.get(loginToken);
+        String userJson = RedisSharededPoolUtil.get(loginToken);
         User user = JsonUtil.stringToObj(userJson, User.class);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ServerResponse.ResponseCode.NEED_LOGIN.getCode(), "用户未登录,请登录管理员");
@@ -53,7 +53,7 @@ public class OrderManageController {
     public ServerResponse<OrderVo> orderDetail(HttpServletRequest httpServletRequest, Long orderNo) {
 
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-        String userJson = RedisPoolUtil.get(loginToken);
+        String userJson = RedisSharededPoolUtil.get(loginToken);
         User user = JsonUtil.stringToObj(userJson, User.class);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ServerResponse.ResponseCode.NEED_LOGIN.getCode(), "用户未登录,请登录管理员");
@@ -74,7 +74,7 @@ public class OrderManageController {
     public ServerResponse<PageInfo> orderSearch(HttpServletRequest httpServletRequest, Long orderNo, @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                                                 @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-        String userJson = RedisPoolUtil.get(loginToken);
+        String userJson = RedisSharededPoolUtil.get(loginToken);
         User user = JsonUtil.stringToObj(userJson, User.class);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ServerResponse.ResponseCode.NEED_LOGIN.getCode(), "用户未登录,请登录管理员");
@@ -94,7 +94,7 @@ public class OrderManageController {
     public ServerResponse<String> orderSendGoods(HttpServletRequest httpServletRequest, Long orderNo) {
 
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-        String userJson = RedisPoolUtil.get(loginToken);
+        String userJson = RedisSharededPoolUtil.get(loginToken);
         User user = JsonUtil.stringToObj(userJson, User.class);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ServerResponse.ResponseCode.NEED_LOGIN.getCode(), "用户未登录,请登录管理员");

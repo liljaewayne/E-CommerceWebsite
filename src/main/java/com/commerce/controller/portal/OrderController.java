@@ -10,7 +10,7 @@ import com.commerce.pojo.User;
 import com.commerce.service.OrderService;
 import com.commerce.util.CookieUtil;
 import com.commerce.util.JsonUtil;
-import com.commerce.util.RedisPoolUtil;
+import com.commerce.util.RedisSharededPoolUtil;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class OrderController {
     @ResponseBody
     public ServerResponse create(HttpServletRequest httpServletRequest, Integer shippingId) {
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-        String userJson = RedisPoolUtil.get(loginToken);
+        String userJson = RedisSharededPoolUtil.get(loginToken);
         User user = JsonUtil.stringToObj(userJson, User.class);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ServerResponse.ResponseCode.NEED_LOGIN.getCode(), ServerResponse.ResponseCode.NEED_LOGIN.getDesc());
@@ -52,7 +52,7 @@ public class OrderController {
     @ResponseBody
     public ServerResponse cancel(HttpServletRequest httpServletRequest, Long orderNo) {
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-        String userJson = RedisPoolUtil.get(loginToken);
+        String userJson = RedisSharededPoolUtil.get(loginToken);
         User user = JsonUtil.stringToObj(userJson, User.class);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ServerResponse.ResponseCode.NEED_LOGIN.getCode(), ServerResponse.ResponseCode.NEED_LOGIN.getDesc());
@@ -65,7 +65,7 @@ public class OrderController {
     @ResponseBody
     public ServerResponse getOrderCartProduct(HttpServletRequest httpServletRequest) {
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-        String userJson = RedisPoolUtil.get(loginToken);
+        String userJson = RedisSharededPoolUtil.get(loginToken);
         User user = JsonUtil.stringToObj(userJson, User.class);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ServerResponse.ResponseCode.NEED_LOGIN.getCode(), ServerResponse.ResponseCode.NEED_LOGIN.getDesc());
@@ -78,7 +78,7 @@ public class OrderController {
     @ResponseBody
     public ServerResponse detail(HttpServletRequest httpServletRequest, Long orderNo) {
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-        String userJson = RedisPoolUtil.get(loginToken);
+        String userJson = RedisSharededPoolUtil.get(loginToken);
         User user = JsonUtil.stringToObj(userJson, User.class);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ServerResponse.ResponseCode.NEED_LOGIN.getCode(), ServerResponse.ResponseCode.NEED_LOGIN.getDesc());
@@ -90,7 +90,7 @@ public class OrderController {
     @ResponseBody
     public ServerResponse list(HttpServletRequest httpServletRequest, @RequestParam(value = "pageNum", defaultValue = "1") int pageNum, @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-        String userJson = RedisPoolUtil.get(loginToken);
+        String userJson = RedisSharededPoolUtil.get(loginToken);
         User user = JsonUtil.stringToObj(userJson, User.class);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ServerResponse.ResponseCode.NEED_LOGIN.getCode(), ServerResponse.ResponseCode.NEED_LOGIN.getDesc());
@@ -103,7 +103,7 @@ public class OrderController {
     @ResponseBody
     public ServerResponse pay(HttpServletRequest httpServletRequest, Long orderNo, HttpServletRequest request) {
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-        String userJson = RedisPoolUtil.get(loginToken);
+        String userJson = RedisSharededPoolUtil.get(loginToken);
         User user = JsonUtil.stringToObj(userJson, User.class);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ServerResponse.ResponseCode.NEED_LOGIN.getCode(), ServerResponse.ResponseCode.NEED_LOGIN.getDesc());
@@ -159,7 +159,7 @@ public class OrderController {
     @ResponseBody
     public ServerResponse<Boolean> queryOrderPayStatus(HttpServletRequest httpServletRequest, Long orderNo) {
         String loginToken = CookieUtil.readLoginToken(httpServletRequest);
-        String userJson = RedisPoolUtil.get(loginToken);
+        String userJson = RedisSharededPoolUtil.get(loginToken);
         User user = JsonUtil.stringToObj(userJson, User.class);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ServerResponse.ResponseCode.NEED_LOGIN.getCode(), ServerResponse.ResponseCode.NEED_LOGIN.getDesc());

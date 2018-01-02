@@ -11,7 +11,7 @@ import redis.clients.util.Sharded;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RedisShardedPool {
+public class RedisSharededPool {
     // sharded jedis连接池
     private static ShardedJedisPool pool;
 
