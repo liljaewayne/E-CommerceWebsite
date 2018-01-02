@@ -48,7 +48,6 @@ public class RedisPool {
         jedisPoolConfig.setBlockWhenExhausted(true);
 
         pool = new JedisPool(jedisPoolConfig, ip, port, 2_000);
-
     }
 
     static {
