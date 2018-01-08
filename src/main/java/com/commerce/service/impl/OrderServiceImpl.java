@@ -139,7 +139,7 @@ public class OrderServiceImpl implements OrderService {
         orderVo.setCloseTime(DateTimeUtil.dateToStr(order.getCloseTime()));
 
 
-        orderVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"));
+        orderVo.setImageHost(PropertiesUtil.getProperty("ftp.server.img.http.prefix"));
 
 
         List<OrderItemVo> orderItemVoList = Lists.newArrayList();
@@ -304,7 +304,7 @@ public class OrderServiceImpl implements OrderService {
         }
         orderProductVo.setProductTotalPrice(payment);
         orderProductVo.setOrderItemVoList(orderItemVoList);
-        orderProductVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"));
+        orderProductVo.setImageHost(PropertiesUtil.getProperty("ftp.server.img.http.prefix"));
         return ServerResponse.createBySuccess(orderProductVo);
     }
 
@@ -447,7 +447,7 @@ public class OrderServiceImpl implements OrderService {
                     logger.error("上传二维码异常", e);
                 }
                 logger.info("qrPath:" + qrPath);
-                String qrUrl = PropertiesUtil.getProperty("ftp.server.http.prefix") + targetFile.getName();
+                String qrUrl = PropertiesUtil.getProperty("ftp.server.img.http.prefix") + targetFile.getName();
                 resultMap.put("qrUrl", qrUrl);
                 return ServerResponse.createBySuccess(resultMap);
 
