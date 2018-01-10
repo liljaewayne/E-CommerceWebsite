@@ -5,6 +5,8 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import javax.annotation.PostConstruct;
+
 public class RedisPool {
 
     // jedis连接池
@@ -33,7 +35,7 @@ public class RedisPool {
     // redis server port
     private static Integer port = Integer.parseInt(PropertiesUtil.getProperty("redis.port", "6379"));
 
-
+    @PostConstruct
     private static void initPool() {
 
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
@@ -50,9 +52,9 @@ public class RedisPool {
         pool = new JedisPool(jedisPoolConfig, ip, port, 2_000);
     }
 
-    static {
+    /*static {
         initPool();
-    }
+    }*/
 
     public static Jedis getJedis() {
         return pool.getResource();

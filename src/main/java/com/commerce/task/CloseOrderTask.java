@@ -1,33 +1,34 @@
 package com.commerce.task;
 
 import com.commerce.common.Const;
+import com.commerce.common.RedissonManager;
 import com.commerce.service.OrderService;
 import com.commerce.util.PropertiesUtil;
 import com.commerce.util.RedisSharededPoolUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
 public class CloseOrderTask {
 
-    // 这个类定时任务，如果环境没有配置好，会一直报错，所以在@Scheduled上都先注释上，小伙伴们可以根据实际课程讲解一步一步来。
-    // 每个方案都会对比讲解，方法也是一点一点对比编码、注释、运行对比讲解。
     // Spring Schedule默认是串行执行。如果改用quartz的话就要注意。
 
-    // 另外Redis的环境要搭建好，否则这个类会报错
-    // 例如RedisSharededPoolUtil里面使用的分布式的两个IP
     // 例如Redisson里面的初始化，目前为了小伙伴们的项目能先正常运行，Redisson初始化已注释
 
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private RedissonManager redissonManager;
 
     /**
-     * 没有分布式锁，运行起来来看日志。
+     * 没有分布式锁, 只适合单机部署环境
      */
 //    @Scheduled(cron = "0 */1 * * * ?")// 每1分钟(每个1分钟的整数倍)
     public void closeOrderTaskV1() {
@@ -37,9 +38,9 @@ public class CloseOrderTask {
 
 
     /**
-     * 可能出现死锁，虽然在执行close的时候有防死锁，但是还是会出现，继续演进V3
+     * 可能出现死锁，虽然在执行close的时候有防死锁，但是还是会出现，因为setnx无法与expire进行原子操作
      */
-    @Scheduled(cron = "0 */1 * * * ?")// 每1分钟(每个1分钟的整数倍)
+//    @Scheduled(cron = "0 */1 * * * ?")// 每1分钟(每个1分钟的整数倍)
     public void closeOrderTaskV2() throws InterruptedException {
         long lockTimeout = Long.parseLong(PropertiesUtil.getProperty("lock.timeout.millis", "5000"));// 锁5秒有效期
         //这个时间如何用呢，看下面。和时间戳结合起来用。
@@ -55,11 +56,8 @@ public class CloseOrderTask {
 
     /**
      * 防死锁之分布式锁
-     *
-     * @throws InterruptedException
      */
-//    @Scheduled(cron="0 */1 * * * ?")// 每1分钟(每个1分钟的整数倍)
-    // FIXME debug and config
+//    @Scheduled(cron = "0 */1 * * * ?")// 每1分钟(每个1分钟的整数倍)
     public void closeOrderTaskV3() throws InterruptedException {
         //防死锁分布式锁
         long lockTimeout = Long.parseLong(PropertiesUtil.getProperty("lock.timeout.millis", "50000"));// 锁50秒有效期
@@ -90,6 +88,33 @@ public class CloseOrderTask {
                 }
             } else {
                 log.info("没有获得分布式锁:{}", Const.REDIS_LOCK.CLOSE_ORDER_TASK_LOCK);
+            }
+        }
+    }
+
+
+    /**
+     * Redisson分布式锁实现
+     *
+     * @throws InterruptedException
+     */
+//    @Scheduled(cron = "0 */1 * * * ?")// 每1分钟(每个1分钟的整数倍)
+    public void closeOrderTaskV4() throws InterruptedException {
+        RLock lock = redissonManager.getRedisson().getLock(Const.REDIS_LOCK.CLOSE_ORDER_TASK_LOCK);
+        boolean getLock = false;
+        try {
+            if (getLock = lock.tryLock(0, 50, TimeUnit.SECONDS)) {// trylock增加锁
+                log.info("===获取{},ThreadName:{}", Const.REDIS_LOCK.CLOSE_ORDER_TASK_LOCK, Thread.currentThread().getName());
+                int hour = Integer.parseInt(PropertiesUtil.getProperty("close.order.task.time.hour", "2"));
+//                orderService.closeOrder(hour);
+                System.out.println("模拟执行业务: orderService.closeOrder(" + hour + ");");
+            } else {
+                log.info("===没有获得分布式锁:{}", Const.REDIS_LOCK.CLOSE_ORDER_TASK_LOCK);
+            }
+        } finally {
+            if (getLock) {
+                log.info("===释放分布式锁:{}", Const.REDIS_LOCK.CLOSE_ORDER_TASK_LOCK);
+                lock.unlock();
             }
         }
     }
