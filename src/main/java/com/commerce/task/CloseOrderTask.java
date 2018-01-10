@@ -7,6 +7,7 @@ import com.commerce.util.RedisSharededPoolUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -38,8 +39,7 @@ public class CloseOrderTask {
     /**
      * 可能出现死锁，虽然在执行close的时候有防死锁，但是还是会出现，继续演进V3
      */
-//    @Scheduled(cron="0 */1 * * * ?")// 每1分钟(每个1分钟的整数倍)
-    // FIXME debug and config
+    @Scheduled(cron = "0 */1 * * * ?")// 每1分钟(每个1分钟的整数倍)
     public void closeOrderTaskV2() throws InterruptedException {
         long lockTimeout = Long.parseLong(PropertiesUtil.getProperty("lock.timeout.millis", "5000"));// 锁5秒有效期
         //这个时间如何用呢，看下面。和时间戳结合起来用。
@@ -98,18 +98,18 @@ public class CloseOrderTask {
     private void closeOrder() {
         // expire命令用于给该锁设定一个过期时间，用于防止线程crash，导致锁一直有效，从而导致死锁。
         RedisSharededPoolUtil.expire(Const.REDIS_LOCK.CLOSE_ORDER_TASK_LOCK, 50);// 有效期50秒,防死锁
-        
+
         log.info("获取{},ThreadName:{}", Const.REDIS_LOCK.CLOSE_ORDER_TASK_LOCK, Thread.currentThread().getName());
-        
+
         int hour = Integer.parseInt(PropertiesUtil.getProperty("close.order.task.time.hour", "1"));
-        
+
 //        orderService.closeOrder(hour);
         System.out.println("模拟执行业务: orderService.closeOrder(hour);");
-        
+
         RedisSharededPoolUtil.del(Const.REDIS_LOCK.CLOSE_ORDER_TASK_LOCK);// 释放锁
-        
+
         log.info("释放{},ThreadName:{}", Const.REDIS_LOCK.CLOSE_ORDER_TASK_LOCK, Thread.currentThread().getName());
-        
+
         log.info("===========================");
     }
 
