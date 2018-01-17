@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <property name="LOG_HOME" value="${CATALINA_HOME}/logs"></property>
+    
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoding>UTF-8</encoding>
         <encoder>
@@ -11,9 +13,10 @@
     </appender>
 
     <appender name="commerce" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>D:/workspaces/E-CommerceWebSite/logs/E-CommerceWebSite.log</File>
+        <!--<File>D:/workspaces/E-CommerceWebSite/logs/E-CommerceWebSite.log</File>-->
+        <File>${LOG_HOME}/E-CommerceWebSite.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>D:/workspaces/E-CommerceWebSite/logs/E-CommerceWebSite.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <fileNamePattern>${LOG_HOME}/E-CommerceWebSite.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
             <append>true</append>
             <maxHistory>10</maxHistory>
         </rollingPolicy>
@@ -23,9 +26,9 @@
     </appender>
 
     <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>D:/workspaces/E-CommerceWebSite/logs/error.log</File>
+        <File>${LOG_HOME}/error.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>D:/workspaces/E-CommerceWebSite/logs/error.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <fileNamePattern>${LOG_HOME}/error.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
             <append>true</append>
             <maxHistory>10</maxHistory>
         </rollingPolicy>
@@ -42,6 +45,7 @@
     <logger name="com.commerce" additivity="false" level="INFO">
         <appender-ref ref="commerce"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="error"/>
     </logger>
 
     <!-- mybatis log -->

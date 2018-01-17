@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
@@ -57,7 +58,7 @@ public class CloseOrderTask {
     /**
      * 防死锁之分布式锁
      */
-//    @Scheduled(cron = "0 */1 * * * ?")// 每1分钟(每个1分钟的整数倍)
+    @Scheduled(cron = "0 */1 * * * ?")// 每1分钟(每个1分钟的整数倍)
     public void closeOrderTaskV3() throws InterruptedException {
         //防死锁分布式锁
         long lockTimeout = Long.parseLong(PropertiesUtil.getProperty("lock.timeout.millis", "50000"));// 锁50秒有效期
@@ -128,8 +129,8 @@ public class CloseOrderTask {
 
         int hour = Integer.parseInt(PropertiesUtil.getProperty("close.order.task.time.hour", "1"));
 
-//        orderService.closeOrder(hour);
-        System.out.println("模拟执行业务: orderService.closeOrder(hour);");
+        orderService.closeOrder(hour);
+//        System.out.println("模拟执行业务: orderService.closeOrder(hour);");
 
         RedisSharededPoolUtil.del(Const.REDIS_LOCK.CLOSE_ORDER_TASK_LOCK);// 释放锁
 
