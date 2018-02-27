@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
@@ -22,12 +23,12 @@ import javax.servlet.http.HttpSession;
 public class UserManageController {
 
     @Autowired
-    private UserService serService;
+    private UserService userService;
 
     @RequestMapping(value = "login.do", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
     public ServerResponse<User> login(String username, String password, HttpSession session, HttpServletResponse httpServletResponse) {
-        ServerResponse<User> response = serService.login(username, password);
+        ServerResponse<User> response = userService.login(username, password);
         if (response.isSuccess()) {
             User user = response.getData();
             if (user.getRole() == Const.Role.ROLE_ADMIN) {
@@ -41,6 +42,12 @@ public class UserManageController {
             }
         }
         return response;
+    }
+
+    @RequestMapping(value = "list.do", method = {RequestMethod.POST, RequestMethod.GET})
+    @ResponseBody
+    public ServerResponse list(@RequestParam(value = "pageNum", defaultValue = "1") int pageNum, @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        return userService.listAll(pageNum, pageSize);
     }
 
 }

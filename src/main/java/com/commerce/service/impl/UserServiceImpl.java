@@ -7,10 +7,13 @@ import com.commerce.pojo.User;
 import com.commerce.service.UserService;
 import com.commerce.util.MD5Util;
 import com.commerce.util.RedisSharededPoolUtil;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service("userService")
@@ -198,5 +201,13 @@ public class UserServiceImpl implements UserService {
         return ServerResponse.createByError();
     }
 
+    @Override
+    public ServerResponse listAll(int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<User> userList = userMapper.listAll();
+        PageInfo pageResult = new PageInfo(userList);
+        pageResult.setList(userList);
+        return ServerResponse.createBySuccess(pageResult);
+    }
 
 }
