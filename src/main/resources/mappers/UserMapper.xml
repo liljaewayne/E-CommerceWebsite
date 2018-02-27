@@ -210,9 +210,18 @@
     </select>
 
     <select id="listAll" resultMap="BaseResultMap" parameterType="map">
-        select
-            id, username, "" as password, email, phone, question, answer, role, create_time, update_time
-        from commerce_user
-        ORDER BY id asc
+        SELECT
+            id,
+            username,
+            "" AS password,
+            email,
+            phone,
+            "" AS question,
+            "" AS answer,
+            role,
+            create_time,
+            update_time
+        FROM commerce_user
+        ORDER BY id ASC
     </select>
 </mapper>
