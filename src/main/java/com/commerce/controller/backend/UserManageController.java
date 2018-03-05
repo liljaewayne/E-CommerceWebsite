@@ -33,7 +33,7 @@ public class UserManageController {
             User user = response.getData();
             if (user.getRole() == Const.Role.ROLE_ADMIN) {
 
-                RedisSharededPoolUtil.setEx(session.getId(), JsonUtil.objToString(user), Const.RedisCacheExTime.REDIS_SESSION_EX_TIME);
+                RedisSharededPoolUtil.setEx(session.getId(), JsonUtil.objToString(user), Const.RedisCacheExTime.REDIS_SESSION_EX_TIME_SECONDS);
                 CookieUtil.writeLoginToken(httpServletResponse, session.getId());
 
                 return response;

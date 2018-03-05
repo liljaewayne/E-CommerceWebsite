@@ -28,7 +28,7 @@ public class SessionExpireFilter implements Filter {
             User user = JsonUtil.stringToObj(userJson, User.class);
             if (user != null) {
                 // 重置session时间, 即调用expire
-                RedisSharededPoolUtil.expire(loginToken, Const.RedisCacheExTime.REDIS_SESSION_EX_TIME);
+                RedisSharededPoolUtil.expire(loginToken, Const.RedisCacheExTime.REDIS_SESSION_EX_TIME_SECONDS);
             }
         }
 

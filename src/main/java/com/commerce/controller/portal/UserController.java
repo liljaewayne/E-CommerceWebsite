@@ -43,7 +43,7 @@ public class UserController {
              */
             RedisSharededPoolUtil.setEx(session.getId(),
                     JsonUtil.objToString(response.getData()),
-                    Const.RedisCacheExTime.REDIS_SESSION_EX_TIME);
+                    Const.RedisCacheExTime.REDIS_SESSION_EX_TIME_SECONDS);
 
 
             CookieUtil.writeLoginToken(httpServletResponse, session.getId());
@@ -148,7 +148,7 @@ public class UserController {
 
         if (response.isSuccess()) {
             response.getData().setUsername(currentUser.getUsername());
-            RedisSharededPoolUtil.setEx(loginToken, JsonUtil.objToString(response.getData()), Const.RedisCacheExTime.REDIS_SESSION_EX_TIME);
+            RedisSharededPoolUtil.setEx(loginToken, JsonUtil.objToString(response.getData()), Const.RedisCacheExTime.REDIS_SESSION_EX_TIME_SECONDS);
         }
         return response;
     }
