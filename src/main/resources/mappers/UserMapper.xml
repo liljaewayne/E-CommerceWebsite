@@ -16,8 +16,8 @@
         </constructor>
     </resultMap>
     <sql id="Base_Column_List">
-    id, username, password, email, phone, question, answer, role, create_time, update_time
-  </sql>
+        id, username, password, email, phone, question, answer, role, create_time, update_time
+    </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
         <include refid="Base_Column_List"/>
@@ -25,19 +25,19 @@
         where id = #{id,jdbcType=INTEGER}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from commerce_user
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
+        DELETE FROM commerce_user
+        WHERE id = #{id,jdbcType=INTEGER}
+    </delete>
     <insert id="insert" parameterType="com.commerce.pojo.User">
-    insert into commerce_user (id, username, password, 
-      email, phone, question, 
-      answer, role, create_time, 
-      update_time)
-    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
-      #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{question,jdbcType=VARCHAR}, 
-      #{answer,jdbcType=VARCHAR}, #{role,jdbcType=INTEGER}, now(), 
-      now())
-  </insert>
+        INSERT INTO commerce_user (id, username, password,
+                                   email, phone, question,
+                                   answer, role, create_time,
+                                   update_time)
+        VALUES (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+                #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{question,jdbcType=VARCHAR},
+                #{answer,jdbcType=VARCHAR}, #{role,jdbcType=INTEGER}, now(),
+                now())
+    </insert>
     <insert id="insertSelective" parameterType="com.commerce.pojo.User">
         insert into commerce_user
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -139,33 +139,34 @@
         where id = #{id,jdbcType=INTEGER}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.commerce.pojo.User">
-    update commerce_user
-    set username = #{username,jdbcType=VARCHAR},
-      password = #{password,jdbcType=VARCHAR},
-      email = #{email,jdbcType=VARCHAR},
-      phone = #{phone,jdbcType=VARCHAR},
-      question = #{question,jdbcType=VARCHAR},
-      answer = #{answer,jdbcType=VARCHAR},
-      role = #{role,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = now()
-    where id = #{id,jdbcType=INTEGER}
-  </update>
+        UPDATE commerce_user
+        SET username    = #{username,jdbcType=VARCHAR},
+            password    = #{password,jdbcType=VARCHAR},
+            email       = #{email,jdbcType=VARCHAR},
+            phone       = #{phone,jdbcType=VARCHAR},
+            question    = #{question,jdbcType=VARCHAR},
+            answer      = #{answer,jdbcType=VARCHAR},
+            role        = #{role,jdbcType=INTEGER},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = now()
+        WHERE id = #{id,jdbcType=INTEGER}
+    </update>
 
     <select id="checkUsername" resultType="int" parameterType="string">
-        select count(1) from commerce_user
-        where username = #{username}
+        SELECT count(1)
+        FROM commerce_user
+        WHERE username = #{username}
     </select>
 
     <select id="checkEmail" resultType="int" parameterType="string">
-        select count(1) from commerce_user
-        where email = #{email}
+        SELECT count(1)
+        FROM commerce_user
+        WHERE email = #{email}
     </select>
 
 
     <select id="selectLogin" resultMap="BaseResultMap" parameterType="map">
         SELECT
-        -- *???//这样真的好么?答案就是,这样不好.
         <include refid="Base_Column_List"/>
         from commerce_user
         where username = #{username}
@@ -174,39 +175,53 @@
 
 
     <select id="selectQuestionByUsername" resultType="string" parameterType="string">
-        select
-        question
-        from commerce_user
-        where username = #{username}
+        SELECT question
+        FROM commerce_user
+        WHERE username = #{username}
     </select>
 
     <select id="checkAnswer" resultType="int" parameterType="map">
-        SELECT
-        count(1)
-        from commerce_user
-        where username=#{username}
-        and question = #{question}
-        and answer = #{answer}
+        SELECT count(1)
+        FROM commerce_user
+        WHERE username = #{username}
+              AND question = #{question}
+              AND answer = #{answer}
     </select>
 
     <update id="updatePasswordByUsername" parameterType="map">
-        update commerce_user
-        SET password = #{passwordNew},update_time = now()
-        where username = #{username}
+        UPDATE commerce_user
+        SET password = #{passwordNew}, update_time = now()
+        WHERE username = #{username}
     </update>
 
     <select id="checkPassword" resultType="int" parameterType="map">
-        SELECT
-        count(1)
-        from commerce_user
-        where password = #{password}
-        and id = #{userId}
+        SELECT count(1)
+        FROM commerce_user
+        WHERE password = #{password}
+              AND id = #{userId}
     </select>
 
 
     <select id="checkEmailByUserId" resultType="int" parameterType="map">
-        select count(1) from commerce_user
-        where email = #{email}
-        and id != #{userId}
+        SELECT count(1)
+        FROM commerce_user
+        WHERE email = #{email}
+              AND id != #{userId}
+    </select>
+
+    <select id="listAll" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+            id,
+            username,
+            "" AS password,
+            email,
+            phone,
+            "" AS question,
+            "" AS answer,
+            role,
+            create_time,
+            update_time
+        FROM commerce_user
+        ORDER BY id ASC
     </select>
 </mapper>

@@ -27,8 +27,10 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 @Service("orderService")
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
 
@@ -139,7 +142,7 @@ public class OrderServiceImpl implements OrderService {
         orderVo.setCloseTime(DateTimeUtil.dateToStr(order.getCloseTime()));
 
 
-        orderVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"));
+        orderVo.setImageHost(PropertiesUtil.getProperty("ftp.server.img.http.prefix"));
 
 
         List<OrderItemVo> orderItemVoList = Lists.newArrayList();
@@ -304,7 +307,7 @@ public class OrderServiceImpl implements OrderService {
         }
         orderProductVo.setProductTotalPrice(payment);
         orderProductVo.setOrderItemVoList(orderItemVoList);
-        orderProductVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"));
+        orderProductVo.setImageHost(PropertiesUtil.getProperty("ftp.server.img.http.prefix"));
         return ServerResponse.createBySuccess(orderProductVo);
     }
 
@@ -417,7 +420,7 @@ public class OrderServiceImpl implements OrderService {
                 .setNotifyUrl(PropertiesUtil.getProperty("alipay.callback.url"))// 支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置
                 .setGoodsDetailList(goodsDetailList);
 
-        
+
         AlipayF2FPrecreateResult result = tradeService.tradePrecreate(builder);
         switch (result.getTradeStatus()) {
             case SUCCESS:
@@ -435,7 +438,7 @@ public class OrderServiceImpl implements OrderService {
                 // 需要修改为运行机器上的路径
                 String qrPath = String.format(path + "/qr-%s.png", response.getOutTradeNo());
                 String qrFileName = String.format("qr-%s.png", response.getOutTradeNo());
-                
+
                 // 使用zxing将字符串转成二维码图片, 并保存到qrPath路径下
                 ZxingUtils.getQRCodeImge(response.getQrCode(), 256, qrPath);
 
@@ -447,10 +450,10 @@ public class OrderServiceImpl implements OrderService {
                     logger.error("上传二维码异常", e);
                 }
                 logger.info("qrPath:" + qrPath);
-                String qrUrl = PropertiesUtil.getProperty("ftp.server.http.prefix") + targetFile.getName();
+                String qrUrl = PropertiesUtil.getProperty("ftp.server.img.http.prefix") + targetFile.getName();
                 resultMap.put("qrUrl", qrUrl);
                 return ServerResponse.createBySuccess(resultMap);
-                
+
             case FAILED:
                 logger.error("支付宝预下单失败!!!");
                 return ServerResponse.createByErrorMessage("支付宝预下单失败!!!");
@@ -531,7 +534,7 @@ public class OrderServiceImpl implements OrderService {
         pageResult.setList(orderVoList);
         return ServerResponse.createBySuccess(pageResult);
     }
-    
+
     public ServerResponse<OrderVo> manageDetail(Long orderNo) {
         Order order = orderMapper.selectByOrderNo(orderNo);
         if (order != null) {
@@ -569,6 +572,37 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         return ServerResponse.createByErrorMessage("订单不存在");
+    }
+
+
+    @Override
+    public void closeOrder(int hour) {
+        Date closeDateTime = DateUtils.addHours(new Date(), -hour);
+        List<Order> orderList = orderMapper.selectOrderStatusByCreateTime(
+                Const.OrderStatusEnum.NO_PAY.getCode(), 
+                DateTimeUtil.dateToStr(closeDateTime)
+        );
+
+        for (Order order : orderList) {
+            List<OrderItem> orderItemList = orderItemMapper.getByOrderNo(order.getOrderNo());
+            for (OrderItem orderItem : orderItemList) {
+
+                //使用写独占锁，一定要用主键where条件，防止锁表。同时必须是支持MySQL的Innodb。
+                Integer stock = productMapper.selectStockByProductId(orderItem.getProductId());
+
+                //考虑到已生成的订单里的产品,被删除的情况
+                if (stock == null) {
+                    continue;
+                }
+                Product product = new Product();
+                product.setId(orderItem.getProductId());
+                product.setStock(stock + orderItem.getQuantity());
+                productMapper.updateByPrimaryKeySelective(product);
+            }
+            orderMapper.closeOrderCloseByOrderId(order.getId());
+            log.info("关闭订单OrderNo:{}", order.getOrderNo());
+        }
+
     }
 
 

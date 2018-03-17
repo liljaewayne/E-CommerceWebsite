@@ -4,7 +4,9 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          id="WebApp_ID" version="2.5">
 
-    <display-name>Archetype Created Web Application</display-name>
+    <display-name>E-CommerceWebsite</display-name>
+
+    <!-- 字符集过滤器, 使用utf-8 -->
     <filter>
         <filter-name>characterEncodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -22,6 +24,25 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <!-- redis中session生命周期更新过滤器 -->
+    <filter>
+        <filter-name>sessionExpireFilter</filter-name>
+        <filter-class>com.commerce.controller.common.SessionExpireFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>sessionExpireFilter</filter-name>
+        <url-pattern>*.do</url-pattern>
+    </filter-mapping>
+
+    <!-- spring-session代理配置 -->
+    <!--<filter>
+        <filter-name>springSessionRepositoryFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springSessionRepositoryFilter</filter-name>
+        <url-pattern>*.do</url-pattern>
+    </filter-mapping>-->
 
     <listener>
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
@@ -30,6 +51,7 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
+
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
@@ -43,10 +65,15 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
-
-    <servlet-mapping>
+    <!--<servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>*.do</url-pattern>
+    </servlet-mapping>-->
+
+    <!-- RESTful -->
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
 </web-app>
 

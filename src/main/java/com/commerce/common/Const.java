@@ -12,6 +12,8 @@ public class Const {
     public static final String EMAIL = "email";
     public static final String USERNAME = "username";
 
+    public static final String TOKEN_PREFIX = "token_";
+
     public interface ProductListOrderBy {
         Set<String> PRICE_ASC_DESC = Sets.newHashSet("price_desc", "price_asc");
     }
@@ -144,5 +146,17 @@ public class Const {
 
     }
 
+    public interface RedisCacheExTime {
+        int REDIS_SESSION_EX_TIME_SECONDS = 1_800; // 30分钟
+    }
 
+    public interface CookieConst {
+        String COOKIE_DOMAIN = "liujianwei.top";
+        String COOKIE_NAME = "commerce_login_token";
+        int EXPIRE_TIME_SECONDS = 31_536_000; // 一年
+    }
+
+    public interface REDIS_LOCK {
+        String CLOSE_ORDER_TASK_LOCK = "CLOSE_ORDER_TASK_LOCK";
+    }
 }

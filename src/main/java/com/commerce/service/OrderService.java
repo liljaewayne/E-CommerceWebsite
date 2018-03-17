@@ -33,5 +33,11 @@ public interface OrderService {
 
     ServerResponse<String> manageSendGoods(Long orderNo);
 
-
+    /**
+     * 定时关单，参数是小时。关闭X个小时之内未付款的订单，
+     * @param hour
+     *
+     * 写独占锁，用默认行锁，Geely温馨提示 一定要增加主键哟，否则就锁表啦！！！好可怕！！
+     */
+    void closeOrder(int hour);
 }
