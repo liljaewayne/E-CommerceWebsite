@@ -1,4 +1,4 @@
-# E-CommerceWebsite
+# E-CommerceWebsite for everyone 😊
 
 ## 项目简介
 该项目是一个模拟电商网站，仿照目前主流电商网站的业务流程制作，仅作个人练习使用。
